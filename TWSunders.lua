@@ -7,10 +7,12 @@ TWSunders:RegisterEvent("PLAYER_TARGET_CHANGED")
 TWSunders:RegisterEvent("PLAYER_REGEN_DISABLED")
 TWSunders:RegisterEvent("PLAYER_REGEN_ENABLED")
 
+local sDev = false
+
 TWSunders:SetScript("OnEvent", function()
-    if event and GetNumRaidMembers() > 0 then
+    if event and (GetNumRaidMembers() > 0 or sDev) then
         if event == "PLAYER_REGEN_DISABLED" then
-            if UnitExists('target') and UnitIsEnemy('player', 'target') then
+            if UnitExists('target') and (UnitIsEnemy('player', 'target') or sDev) then
                 TWSunderChecker:Hide()
                 if not TWSunders:checkFive() then
                     TWSunderChecker:Show()
@@ -21,7 +23,7 @@ TWSunders:SetScript("OnEvent", function()
             TWSunderChecker:Hide()
         end
         if event == 'PLAYER_TARGET_CHANGED' and UnitExists('target') then
-            if UnitIsEnemy('player', 'target') and UnitAffectingCombat('player') and UnitAffectingCombat('target') then
+            if (UnitIsEnemy('player', 'target') or sDev) and UnitAffectingCombat('player') and UnitAffectingCombat('target') then
                 TWSunderChecker:Hide()
                 if not TWSunders:checkFive() then
                     TWSunderChecker:Show()
@@ -53,7 +55,7 @@ end
 
 function TWSunders:checkFive()
     for i = 1, 16 do
-        local debuff, count = UnitDebuff("target", i) -- check count
+        local debuff, count = UnitDebuff("target", i)
         if debuff and debuff == "Interface\\Icons\\Ability_Warrior_Sunder" then
             if count and count == 5 then
                 return true
@@ -64,18 +66,12 @@ function TWSunders:checkFive()
 end
 
 function TWSunders:check_sunder()
-    if UnitExists('target') and UnitIsEnemy('player', 'target') then
-        for i = 1, 16 do
-            local debuff, count = UnitDebuff("target", i) -- check count
-            if debuff and debuff == "Interface\\Icons\\Ability_Warrior_Sunder" then
-                if count and count == 5 and TWSunders:sunderRound(GetTime() - TWSunderChecker.timerStart, 1) > 0.1 then
-
-
-                    SendChatMessage("[" .. UnitName('target') .. "] 5 Sunders took " .. TWSunders:sunderRound(GetTime() - TWSunderChecker.timerStart, 1) .. "sec", "SAY")
-                    TWSunderChecker:Hide()
-                    break
-                end
-            end
+    if UnitExists('target') and (UnitIsEnemy('player', 'target') or sDev) then
+        local sunderTime = self:sunderRound(GetTime() - TWSunderChecker.timerStart, 1)
+        if self:checkFive() and  sunderTime > 0.1 then
+            SendChatMessage("[" .. UnitName('target') .. "] 5 Sunders took " .. sunderTime .. "sec", "SAY")
+            TWSunderChecker:Hide()
+            return
         end
     end
 end
