@@ -12,7 +12,7 @@ local sDev = false
 TWSunders:SetScript("OnEvent", function()
     if event and (GetNumRaidMembers() > 0 or sDev) then
         if event == "PLAYER_REGEN_DISABLED" then
-            if UnitExists('target') and (UnitIsEnemy('player', 'target') or sDev) then
+            if UnitExists('target') and UnitClassification('target') == 'worldboss' and (UnitIsEnemy('player', 'target') or sDev) then
                 TWSunderChecker:Hide()
                 if not TWSunders:checkFive() then
                     TWSunderChecker:Show()
@@ -23,7 +23,7 @@ TWSunders:SetScript("OnEvent", function()
             TWSunderChecker:Hide()
         end
         if event == 'PLAYER_TARGET_CHANGED' and UnitExists('target') then
-            if (UnitIsEnemy('player', 'target') or sDev) and UnitAffectingCombat('player') and UnitAffectingCombat('target') then
+            if (UnitIsEnemy('player', 'target')  and UnitClassification('target') == 'worldboss' or sDev) and UnitAffectingCombat('player') and UnitAffectingCombat('target') then
                 TWSunderChecker:Hide()
                 if not TWSunders:checkFive() then
                     TWSunderChecker:Show()
