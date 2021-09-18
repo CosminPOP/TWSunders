@@ -68,7 +68,7 @@ end
 function TWSunders:check_sunder()
     if UnitExists('target') and (UnitIsEnemy('player', 'target') or sDev) then
         local sunderTime = self:sunderRound(GetTime() - TWSunderChecker.timerStart, 1)
-        if self:checkFive() and  sunderTime > 0.1 then
+        if self:checkFive() and sunderTime > 1.6 then
             SendChatMessage("[" .. UnitName('target') .. "] 5 Sunders took " .. sunderTime .. "sec", "SAY")
             TWSunderChecker:Hide()
             return
